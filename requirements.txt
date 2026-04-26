@@ -1,0 +1,28 @@
+# Web framework
+fastapi==0.115.5
+uvicorn[standard]==0.32.0
+
+# Settings / env loading
+pydantic-settings==2.6.1
+
+# Supabase Python client
+supabase==2.10.0
+
+# Google Gemini
+google-generativeai==0.8.3
+
+# Whisper (speech to text)
+openai-whisper==20231117
+torch
+
+# Audio processing
+ffmpeg-python
+
+# File / MIME handling
+python-multipart==0.0.12
+
+# Async HTTP
+httpx==0.27.2
+
+# File handling
+aiofiles
