@@ -8,15 +8,11 @@ import uuid
 import json
 import time
 from groq import Groq
-from faster_whisper import WhisperModel
 
 router = APIRouter()
 
 # Init Groq client
 groq_client = Groq(api_key=settings.GROQ_API_KEY)
-
-# Load Whisper model once
-whisper_model = WhisperModel("base", compute_type="int8")
 
 
 def ask_groq(prompt: str) -> str:
@@ -69,9 +65,13 @@ async def upload_video(
             .run(quiet=True)
         )
 
-        # 4. Transcribe with Faster-Whisper
-        segments, _ = whisper_model.transcribe(tmp_audio_path)
-        transcript_text = " ".join([seg.text for seg in segments])
+        # 4. Transcribe using Groq Whisper API
+        with open(tmp_audio_path, "rb") as audio_file:
+            transcription = groq_client.audio.transcriptions.create(
+                model="whisper-large-v3-turbo",
+                file=audio_file,
+            )
+        transcript_text = transcription.text
         if not transcript_text.strip():
             transcript_text = "No speech detected in this video."
 
