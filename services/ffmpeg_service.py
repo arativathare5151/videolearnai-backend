@@ -5,12 +5,7 @@
 WHAT IT DOES
   extract_audio(video_bytes) → WAV bytes (16 kHz mono PCM)
 
-WHY WAV 16 kHz?
-  IBM Watson STT works best with:
-    • WAV or FLAC container
-    • 16 000 Hz sample rate
-    • Mono channel
-    • 16-bit PCM
+
 
 DEPENDENCY
   ffmpeg must be installed on the server.
@@ -23,21 +18,21 @@ import logging
 import subprocess
 import tempfile
 import os
+import shutil
 
 logger = logging.getLogger(__name__)
+
+# Resolve ffmpeg paths
+# Resolve ffmpeg paths (works on both Windows local + Railway Linux)
+FFMPEG  = os.environ.get("FFMPEG_PATH") or shutil.which("ffmpeg") or r"C:\ffmpeg\bin\ffmpeg.EXE"
+FFPROBE = shutil.which("ffprobe") or r"C:\ffmpeg\bin\ffprobe.exe"
+logger.info(f"Using ffmpeg:  {FFMPEG}")
+logger.info(f"Using ffprobe: {FFPROBE}")
 
 
 def extract_audio(video_bytes: bytes) -> bytes:
     """
-    Convert raw video bytes → WAV audio bytes (16 kHz, mono, PCM s16le).
-
-    Steps
-    -----
-    1. Write video bytes to a temp file  (ffmpeg needs seekable input)
-    2. Run ffmpeg to produce WAV in memory via stdout
-    3. Return the WAV bytes
-
-    Raises
+   
     ------
     RuntimeError if ffmpeg exits with a non-zero code.
     """
@@ -48,7 +43,7 @@ def extract_audio(video_bytes: bytes) -> bytes:
 
     try:
         cmd = [
-            "ffmpeg",
+            FFMPEG,
             "-y",                        # overwrite without asking
             "-i", tmp_video_path,        # input file
             "-vn",                       # drop video stream
@@ -91,7 +86,7 @@ def get_video_duration_seconds(video_bytes: bytes) -> float:
 
     try:
         cmd = [
-            "ffprobe",
+            FFPROBE,
             "-v", "error",
             "-show_entries", "format=duration",
             "-of", "default=noprint_wrappers=1:nokey=1",
