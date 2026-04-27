@@ -24,11 +24,14 @@ logger = logging.getLogger(__name__)
 
 # Resolve ffmpeg paths
 # Resolve ffmpeg paths (works on both Windows local + Railway Linux)
-FFMPEG  = os.environ.get("FFMPEG_PATH") or shutil.which("ffmpeg") or r"C:\ffmpeg\bin\ffmpeg.EXE"
-FFPROBE = shutil.which("ffprobe") or r"C:\ffmpeg\bin\ffprobe.exe"
+FFMPEG  = os.environ.get("FFMPEG_PATH") or shutil.which("ffmpeg") or "ffmpeg"
+FFPROBE = shutil.which("ffprobe") or "ffprobe"
+
 logger.info(f"Using ffmpeg:  {FFMPEG}")
 logger.info(f"Using ffprobe: {FFPROBE}")
 
+if not shutil.which("ffmpeg"):
+    logger.warning("⚠️ ffmpeg not found in PATH")
 
 def extract_audio(video_bytes: bytes) -> bytes:
     """

@@ -4,7 +4,7 @@
 # =============================================================
 
 [phases.setup]
-nixPkgs = ["ffmpeg", "python311"]   # install ffmpeg + Python 3.11
+nixPkgs = ["ffmpeg"]  # install ffmpeg + Python 3.11
 
 [phases.install]
 cmds = ["pip install -r requirements.txt"]
